@@ -1,17 +1,26 @@
-import pygame, sys, functions, classes, constants
+import pygame, sys, functions, classes, constants, manager
 from pygame.locals import QUIT
 
 pygame.init()
-win = pygame.display.set_mode((400, 300))
-pygame.display.set_caption('Colosseum Fighter')
 player = classes.Player(50, 50)
+manager.gameObjects.append(player)
 
-while constants.run:
+while manager.run:
+    pygame.time.delay(50)
+    manager.clock.tick()
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == manager.INCREMENT:
+            constants.animationNum += 1
+            if player.attack == True and player.aanim <= 3:
+                print(player.aanim)
+                player.aanim += 1
+                if player.aanim > 3:
+                    player.attack = False
+                    player.aanim = 0
+
     pygame.display.update()
-    win.fill((0, 0, 0))
+    functions.updateUI(manager.gameObjects)
     player.move()
-    player.draw(win)
