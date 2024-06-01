@@ -56,3 +56,18 @@ def dist(o1, o2):
   z = x**2 + y**2
 
   return math.sqrt(z)
+
+def rd(o):
+  if o == 'r':
+    return 1
+  elif o == 'l':
+    return -1
+
+def rp(obj):
+  delta_y = obj.y - manager.gameObjects[0].y
+  if delta_y < 0:
+    return 1
+  elif delta_y > 0:
+    return -1
+  return 0
+  

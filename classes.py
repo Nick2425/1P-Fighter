@@ -1,4 +1,4 @@
-import pygame, sys, functions, constants, manager, os
+import pygame, sys, functions, constants, manager, os, math
 
 playerRight = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/cb/cb-splice', 'row-2-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
 playerLeft = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/cb/cb-splice', 'row-4-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
@@ -19,6 +19,7 @@ class Player():
     self.surf = pygame.display.get_surface()
     self.dir = 'r'
     self.HSTILL = True
+    self.damage = 4
 
   def Attack(self):
     
@@ -67,5 +68,34 @@ class Player():
   def detect(self):
     pass
 
+
+Enemy1R = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e1', 'row-3-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
+Enemy2L = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e1', 'row-2-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
+Enemy2R = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e2', 'row-3-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
+Enemy2L = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e2', 'row-2-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
+Enemy3R = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e3', 'row-3-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
+Enemy3L = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e3', 'row-2-column-' + str(i) + '.png')), 1.5*constants.F)  for i in range(1,5)]
+
 class Enemy():
-  pass
+
+  def __init__(self, x, y, health, damage, speed):
+    self.x = x
+    self.y = y
+    self.health = health
+    self.max_health = health
+    self.v = pygame.math.Vector2(0,0)
+    self.speed = speed
+    self.damage = damage
+    self.surface = pygame.display.get_surface()
+    self.attackB = False
+    self.dir = 'r'
+  
+  def move(self):
+    self.v.x = self.speed * functions.rd(self.dir)
+    self.v.y = self.speed * functions.rp(self)
+    if self.attackB != True:
+      self.x += self.v.x
+      self.y += self.v.y
+    self.draw()
+  def draw(self):
+    pass
