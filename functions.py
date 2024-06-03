@@ -64,6 +64,7 @@ def rd(obj):
     elif delta_x > 0:
       return -1
     return 0
+  #
 def rp(obj):
   delta_y = obj.y - manager.gameObjects[0].y
   if delta_y < 0:
