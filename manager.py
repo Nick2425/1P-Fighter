@@ -1,5 +1,6 @@
 import pygame, constants
 
+
 win = pygame.display.set_mode(constants.SIZE)
 pygame.display.set_caption('Colosseum Fighter')
 
@@ -13,6 +14,6 @@ pygame.time.set_timer(INCREMENT, 250)
 pygame.time.set_timer(INCREMENTa, 100)
 pygame.time.set_timer(ENEMY_RATE, 10000)
 
-
-
+score = 0
+gameObjectCount = 0
 gameObjects = []

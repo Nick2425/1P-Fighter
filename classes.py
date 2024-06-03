@@ -1,4 +1,3 @@
-from _typeshed import Self
 import pygame, sys, functions, constants, manager, os, math
 
 playerRight = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/cb/cb-splice', 'row-2-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
@@ -9,6 +8,8 @@ playerALeft = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphic
 class Player():
 
   def __init__(self, x, y):
+    manager.gameObjectCount += 1
+    self.num = manager.gameObjectCount
     self.x = constants.specs.current_w/2
     self.y = constants.specs.current_h/2
     self.lives = constants.LIVES
@@ -23,11 +24,13 @@ class Player():
     self.damage = 4
 
   def Attack(self):
+    count = 0
     self.attack = True
     self.attackAnimation()
-
-    self.detect()
-
+    if count < 2: # Max 2 obj hit.
+      count += 1
+      self.detect()
+  
   def move(self):
     if (pygame.key.get_pressed()[pygame.K_SPACE]) or self.attack == True:
       self.Attack()
@@ -66,6 +69,15 @@ class Player():
       self.surf.blit(playerALeft[self.aanim], (self.x-17, self.y))
 
   def detect(self):
+    for obj in manager.gameObjects:
+      if obj != self:
+        d = dist(obj, self)
+        if d < 50*constants.F:
+          obj.life -= self.damage
+          if obj.life <= 0:
+            del obj
+            if obj.bullet != True:
+              manager.score += 1
     pass
 
 Enemy1R = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/e1', 'row-3-column-' + str(i) + '.png')), 1*constants.F) for i in range(1,5)]
@@ -78,6 +90,9 @@ Enemy3L = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/ot
 class Enemy():
 
   def __init__(self, x, y, health, damage, speed, type):
+    manager.gameObjectCount += 1
+    self.num = manager.gameObjectCount
+    self.bullet = False
     self.x = x
     self.y = y
     self.health = health
@@ -122,11 +137,13 @@ class Enemy():
 
 
 # Bullet Row 1 25-29
-BulletR = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/wata', 'row-1-column-' + str(24+i) + '.png'))) for i in range(1,5)]
+BulletR = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/wata', 'row-1-column-' + str(24+i) + '.png')), constants.F) for i in range(1,5)]
 BulletL = [pygame.transform.scale_by(pygame.transform.flip(pygame.image.load(os.path.join('graphics/other/wata', 'row-1-column-' + str(24+i) + '.png')), True, False), constants.F) for i in range(1,5)]
 
 class Bullet():
-  def __init__(self, parent, x, y, speed, dir, damage):
+  def __init__(self, x, y, speed, dir, damage):
+    manager.gameObjectCount += 1
+    self.num = manager.gameObjectCount
     self.x = x
     self.y = y
     self.speed = speed
@@ -135,6 +152,7 @@ class Bullet():
     self.damage = 5
     self.v = pygame.math.Vector2(0,0)
     self.parent = parent
+    self.bullet = True
 
   def move(self):
     if self.dir == 'r':
@@ -151,14 +169,13 @@ class Bullet():
     elif self.dir == 'l':
       self.surface.blit(BulletL[constants.animationNum % 4], (self.x, self.y))
 
-  def detect():
+  def detect(self):
     d = functions.dist(manager.gameObjects[0], self)
-    if d < 40 * constants.F:
+    if d < 35 * constants.F:
       manager.gameObjects.remove(self)
       manager.gameObjects[0].health -= self.damage
-      self.parent.aTimer = False
-      #!! ## = pygame.event.custom_type()
-      pygame.time.set_timer(aTimer, )
+
+      # Use condition ever 10s add to potential bullets.
       
       del self
 
