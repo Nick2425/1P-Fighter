@@ -1,3 +1,4 @@
+from _typeshed import Self
 import pygame, sys, functions, constants, manager, os, math
 
 playerRight = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/cb/cb-splice', 'row-2-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
@@ -22,7 +23,6 @@ class Player():
     self.damage = 4
 
   def Attack(self):
-    
     self.attack = True
     self.attackAnimation()
 
@@ -68,17 +68,16 @@ class Player():
   def detect(self):
     pass
 
-
-Enemy1R = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e1', 'row-3-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
-Enemy2L = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e1', 'row-2-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
-Enemy2R = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e2', 'row-3-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
-Enemy2L = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e2', 'row-2-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
-Enemy3R = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e3', 'row-3-column-' + str(i) + '.png')), 1.5*constants.F) for i in range(1,5)]
-Enemy3L = [pygame.scale_by(pygame.image.load(os.path.join('graphics/other/e3', 'row-2-column-' + str(i) + '.png')), 1.5*constants.F)  for i in range(1,5)]
+Enemy1R = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/e1', 'row-3-column-' + str(i) + '.png')), 1*constants.F) for i in range(1,5)]
+Enemy1L = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/e1', 'row-2-column-' + str(i) + '.png')), 1*constants.F) for i in range(1,5)]
+Enemy2R = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/e2', 'row-3-column-' + str(i) + '.png')), 1*constants.F) for i in range(1,5)]
+Enemy2L = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/e2', 'row-2-column-' + str(i) + '.png')), 1*constants.F) for i in range(1,5)]
+Enemy3R = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/e3', 'row-3-column-' + str(i) + '.png')), 1*constants.F) for i in range(1,5)]
+Enemy3L = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/e3', 'row-2-column-' + str(i) + '.png')), 1*constants.F)  for i in range(1,5)]
 
 class Enemy():
 
-  def __init__(self, x, y, health, damage, speed):
+  def __init__(self, x, y, health, damage, speed, type):
     self.x = x
     self.y = y
     self.health = health
@@ -89,13 +88,79 @@ class Enemy():
     self.surface = pygame.display.get_surface()
     self.attackB = False
     self.dir = 'r'
-  
+    self.type = type
   def move(self):
-    self.v.x = self.speed * functions.rd(self.dir)
+    self.v.x = self.speed * functions.rd(self)
     self.v.y = self.speed * functions.rp(self)
+    if self.v.x < 0:
+      self.dir = 'l'
+    elif self.v.x > 0:
+      self.dir = 'r'
     if self.attackB != True:
       self.x += self.v.x
       self.y += self.v.y
     self.draw()
-  def draw(self):
+  def draw(self): #LEFT = 4 # RIGHT = 3
+    if self.type == 1:
+      if self.dir == 'r':
+        self.surface.blit(Enemy1R[constants.animationNum % 4], (self.x, self.y))
+      elif self.dir == 'l':
+          self.surface.blit(Enemy1L[constants.animationNum % 4], (self.x, self.y))
+    elif self.type == 2:
+      if self.dir == 'r':
+        self.surface.blit(Enemy2R[constants.animationNum % 4], (self.x, self.y))
+      elif self.dir == 'l':
+          self.surface.blit(Enemy2L[constants.animationNum % 4], (self.x, self.y))
+    elif self.type == 3:
+      if self.dir == 'r':
+        self.surface.blit(Enemy3R[constants.animationNum % 4], (self.x, self.y))
+      elif self.dir == 'l':
+          self.surface.blit(Enemy3L[constants.animationNum % 4], (self.x, self.y))
     pass
+
+
+
+
+# Bullet Row 1 25-29
+BulletR = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/wata', 'row-1-column-' + str(24+i) + '.png'))) for i in range(1,5)]
+BulletL = [pygame.transform.scale_by(pygame.transform.flip(pygame.image.load(os.path.join('graphics/other/wata', 'row-1-column-' + str(24+i) + '.png')), True, False), constants.F) for i in range(1,5)]
+
+class Bullet():
+  def __init__(self, parent, x, y, speed, dir, damage):
+    self.x = x
+    self.y = y
+    self.speed = speed
+    self.dir = dir
+    self.surface = pygame.display.get_surface()
+    self.damage = 5
+    self.v = pygame.math.Vector2(0,0)
+    self.parent = parent
+
+  def move(self):
+    if self.dir == 'r':
+      self.v.x = self.speed
+    elif self.dir == 'l':
+      self.v.x = -self.speed
+    self.x += self.v.x
+    self.detect()
+    self.draw()
+
+  def draw(self):
+    if self.dir == 'r':
+      self.surface.blit(BulletR[constants.animationNum % 4], (self.x, self.y))
+    elif self.dir == 'l':
+      self.surface.blit(BulletL[constants.animationNum % 4], (self.x, self.y))
+
+  def detect():
+    d = functions.dist(manager.gameObjects[0], self)
+    if d < 40 * constants.F:
+      manager.gameObjects.remove(self)
+      manager.gameObjects[0].health -= self.damage
+      self.parent.aTimer = False
+      #!! ## = pygame.event.custom_type()
+      pygame.time.set_timer(aTimer, )
+      
+      del self
+
+      
+      
