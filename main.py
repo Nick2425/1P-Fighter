@@ -3,24 +3,42 @@ from pygame.locals import QUIT
 
 pygame.init()
 player = classes.Player(50, 50)
-manager.gameObjects.append(player)
 
+#20 Ticks/Second
 while manager.run:
+    #Timer
     pygame.time.delay(50)
     manager.clock.tick()
+
+    # Random number per tick.
+    manager.randTick = random.randint(1, 100)
     for event in pygame.event.get():
+
+        # Enemy Spawn Event
+        # !! Issue with spawning ememies and crashing game.
         if event.type == manager.ENEMY_RATE:
+            score = manager.score
+            factor = score//12+1
             F = constants.F
+            i5 = 0
             u = random.randint(1,3)
-            for g in range(1, u+1):
+            while i5 <= factor:
+                i5 += 1
                 j = random.randint(1,3)
-                d = classes.Enemy(150*F, 150*F, 50, 50, 5, j)
-            manager.gameObjects.append(d)
+                v = random.randint(1,4)
+                d = classes.Enemy(240*F+50*j, 110*F-50*v, 11 + 5*factor, 5+2*factor, v*constants.F, j)
+                manager.gameObjects.append(d)
+
+        # Standard Quit
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+
+        # Animation Increment
         if event.type == manager.INCREMENT:
             constants.animationNum += 1
+
+        # Attack Animation Increment (Faster)
         if event.type == manager.INCREMENTa:
             if player.attack == True and player.aanim <= 3:
                 print(player.aanim)
@@ -28,8 +46,19 @@ while manager.run:
                 if player.aanim > 3:
                     player.attack = False
                     player.aanim = 0
+                    player.count = 0
 
     pygame.display.update()
     functions.updateUI(manager.gameObjects)
-    for obj in manager.gameObjects:
-        obj.move()
+
+    # Calls the move function for all entities.
+    # !! Print objects with the closest y to 0 first.
+    functions.sortObjects(manager.gameObjects)
+    
+fnt = pygame.font.SysFont("comicsans", 100)
+txt = fnt.render("Game Over: Score:" + str(manager.score), False, (0, 0, 0))
+manager.win.blit(txt, (constants.SIZE[0]*0.15, constants.SIZE[1]*0.5))
+pygame.display.update()
+
+pygame.time.delay(3000)
+pygame.quit()

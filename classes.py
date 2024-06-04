@@ -9,11 +9,12 @@ class Player():
 
   def __init__(self, x, y):
     manager.gameObjectCount += 1
+    manager.gameObjects.append(self)
     self.num = manager.gameObjectCount
     self.x = constants.specs.current_w/2
     self.y = constants.specs.current_h/2
     self.lives = constants.LIVES
-    self.MAX_HP = 10
+    self.MAX_HP = 100
     self.life = self.MAX_HP
     self.attack = False
     self.aanim = 0  # Attack Animation
@@ -21,17 +22,25 @@ class Player():
     self.surf = pygame.display.get_surface()
     self.dir = 'r'
     self.HSTILL = True
-    self.damage = 4
+    self.damage = 10
+    self.count = 0
 
   def Attack(self):
-    count = 0
     self.attack = True
     self.attackAnimation()
-    if count < 2: # Max 2 obj hit.
-      count += 1
-      self.detect()
-  
+    if self.count < 2: # Max 2 obj hit.
+      self.count += 1
+      try:
+        self.detect()
+      except:
+        print("L35")
+
+
+
+  # Moves character.
   def move(self):
+    if self.life <= 0:
+      functions.exit()
     if (pygame.key.get_pressed()[pygame.K_SPACE]) or self.attack == True:
       self.Attack()
     if self.attack != True:
@@ -62,22 +71,29 @@ class Player():
     elif self.dir == 'l' and self.HSTILL == True:
       self.surf.blit(playerLeft[0], (self.x, self.y))
 
+  # Prints attack anim.
   def attackAnimation(self):
     if self.dir == 'r':
       self.surf.blit(playerARight[self.aanim], (self.x-17, self.y))
     elif self.dir == 'l':
       self.surf.blit(playerALeft[self.aanim], (self.x-17, self.y))
-
   def detect(self):
-    for obj in manager.gameObjects:
-      if obj != self:
-        d = dist(obj, self)
-        if d < 50*constants.F:
-          obj.life -= self.damage
-          if obj.life <= 0:
-            del obj
-            if obj.bullet != True:
-              manager.score += 1
+    try:
+      for obj in manager.gameObjects:
+        if obj != self:
+          d = functions.dist(obj, self) # Error here?
+          if d < 30*constants.F:
+            print("Found")
+            obj.health -= self.damage
+            functions.push(obj, self, 15*constants.F)
+            if obj.health <= 0:
+              if obj.bullet != True:
+                manager.score += 1
+              delBullet(obj)
+
+    except:
+      print("L76-93 Group")
+
     pass
 
 Enemy1R = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/e1', 'row-3-column-' + str(i) + '.png')), 1*constants.F) for i in range(1,5)]
@@ -104,17 +120,24 @@ class Enemy():
     self.attackB = False
     self.dir = 'r'
     self.type = type
+
   def move(self):
-    self.v.x = self.speed * functions.rd(self)
-    self.v.y = self.speed * functions.rp(self)
-    if self.v.x < 0:
-      self.dir = 'l'
-    elif self.v.x > 0:
-      self.dir = 'r'
-    if self.attackB != True:
-      self.x += self.v.x
-      self.y += self.v.y
+    if self.health < 0:
+      delObject(self)
+    self.attack()
+    if self.attackB == False:
+      self.v.x = self.speed * functions.rd(self)
+      self.v.y = self.speed * functions.rp(self)
+      if self.v.x < 0:
+        self.dir = 'l'
+      elif self.v.x > 0:
+        self.dir = 'r'
+      if self.attackB != True:
+        self.x += self.v.x
+        self.y += self.v.y
+        
     self.draw()
+
   def draw(self): #LEFT = 4 # RIGHT = 3
     if self.type == 1:
       if self.dir == 'r':
@@ -131,28 +154,39 @@ class Enemy():
         self.surface.blit(Enemy3R[constants.animationNum % 4], (self.x, self.y))
       elif self.dir == 'l':
           self.surface.blit(Enemy3L[constants.animationNum % 4], (self.x, self.y))
-    pass
-
-
-
+  def attack(self):
+    if manager.randTick == 1:
+      if len(manager.bulletList) <= 3 and self.attackB == False:
+        self.attackB = True # Condition to only attack once.
+        x = Bullet(self, self.x+15, self.y+15, 7*constants.F, self.dir, self.damage)
+    if manager.randTick < 35:
+      if functions.dist(self, manager.gameObjects[0]) < 20*constants.F:
+        manager.gameObjects[0].life -= self.damage*0.5
+        functions.push(manager.gameObjects[0], self, constants.F)
 
 # Bullet Row 1 25-29
-BulletR = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/wata', 'row-1-column-' + str(24+i) + '.png')), constants.F) for i in range(1,5)]
-BulletL = [pygame.transform.scale_by(pygame.transform.flip(pygame.image.load(os.path.join('graphics/other/wata', 'row-1-column-' + str(24+i) + '.png')), True, False), constants.F) for i in range(1,5)]
+BulletR = [pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/other/wata', 'row-1-column-' + str(24+i) + '.png')), 1.5*constants.F) for i in range(1,6)]
+BulletL = [pygame.transform.scale_by(pygame.transform.flip(pygame.image.load(os.path.join('graphics/other/wata', 'row-1-column-' + str(24+i) + '.png')), True, False), 1.5*constants.F) for i in range(1,6)]
 
 class Bullet():
-  def __init__(self, x, y, speed, dir, damage):
+  def __init__(self, parent, x, y, speed, dir, damage):
+
     manager.gameObjectCount += 1
     self.num = manager.gameObjectCount
     self.x = x
     self.y = y
+    self.iX = x
     self.speed = speed
     self.dir = dir
+    self.health = 5
     self.surface = pygame.display.get_surface()
-    self.damage = 5
+    self.damage = damage
     self.v = pygame.math.Vector2(0,0)
     self.parent = parent
     self.bullet = True
+
+    manager.bulletList.append(self)
+    manager.gameObjects.append(self)
 
   def move(self):
     if self.dir == 'r':
@@ -162,6 +196,10 @@ class Bullet():
     self.x += self.v.x
     self.detect()
     self.draw()
+    
+    # Destroys the object after a certain distance. 300*F pixels.
+    if abs(self.x - self.iX) > 150*constants.F:
+      delBullet(self)
 
   def draw(self):
     if self.dir == 'r':
@@ -171,13 +209,37 @@ class Bullet():
 
   def detect(self):
     d = functions.dist(manager.gameObjects[0], self)
-    if d < 35 * constants.F:
-      manager.gameObjects.remove(self)
-      manager.gameObjects[0].health -= self.damage
+    if d < 20 * constants.F:
+      manager.gameObjects[0].life -= self.damage
+      delBullet(self)
 
-      # Use condition ever 10s add to potential bullets.
-      
-      del self
-
-      
-      
+# Because code is repetitive
+def delObject(obj):
+  if len(manager.gameObjects) != 0:
+    for x in manager.gameObjects:
+      try:
+        if x == obj: 
+          manager.gameObjects.remove(x)
+          del x
+        else:
+          print("Object not found")
+      except:
+        print("Object not found")
+      finally:
+        print(":0")
+def delBullet(obj):
+  if len(manager.bulletList) != 0:
+    for x in manager.bulletList:
+      try:
+        if x == obj: 
+          print(x.parent)
+          x.parent.attackB = False
+          manager.bulletList.remove(x)
+          manager.gameObjects.remove(x)
+          del x
+        else:
+          print("Object not found")
+      except:
+        print("Object not found")
+      finally:
+        print(":0")
