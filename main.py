@@ -30,7 +30,7 @@ while manager.run:
                 i5 += 1
                 j = random.randint(1,3)
                 v = random.randint(1,4)
-                d = classes.Enemy(240*F+50*j, 110*F-50*v, 11 + 5*factor, 5+2*factor, v*constants.F, j)
+                d = classes.Enemy(240*F+50*j, 110*F+50*v, 11 + 5*factor, 5+2*factor, v*constants.F, j)
                 manager.gameObjects.append(d)
 
         # Standard Quit
@@ -62,7 +62,7 @@ while manager.run:
     
 # End Game information, displays score and such, then quits.
 fnt = pygame.font.SysFont("comicsans", 100)
-txt = fnt.render("Game Over: Score:" + str(manager.score), False, (0, 0, 0))
+txt = fnt.render(functions.getHS(manager.score), False, (0, 0, 0))
 manager.win.blit(txt, (constants.SIZE[0]*0.15, constants.SIZE[1]*0.5))
 pygame.display.update()
 

@@ -3,6 +3,18 @@ import pygame, sys, constants, os, manager, math
 BG = pygame.transform.scale_by(pygame.image.load(os.path.join('graphics', 'bg.png')), constants.F)
 pygame.font.init()
 
+def getHS(score):
+  file = open("data.txt", 'r')
+  x = file.readline()
+  if int(x) >= int(score):
+    return "Game Over! Score " + str(score)
+  elif int(x) < int(score):
+    file.close()
+    file = open("data.txt", "w")
+    file.write(str(score))
+    file.close()
+    return "New High Score! " + str(score)
+  
 def loadBG():
   manager.win.blit(BG, (0, 0))
   pygame.transform.scale(manager.win, (480*constants.F, 270*constants.F))
@@ -49,6 +61,11 @@ def loadBarP(obj, x, y):
   txt = fnt.render("Score:" + str(manager.score), False, (255, 255, 255))
   pygame.display.get_surface().blit(txt, (x-25-5*constants.F, y+10*constants.F))
 
+  t = open("data.txt", "r") # Get HS
+  h = t.readline()
+  txt = fnt.render("High Score:" + str(h), False, (255, 255, 255))
+  pygame.display.get_surface().blit(txt, (x-25-5*constants.F, y+20*constants.F))
+  t.close()
   pygame.draw.rect(pygame.display.get_surface(), (85, 27, 27), (x+10*constants.F, y, obj.life * (100 / obj.MAX_HP)*constants.F, 20*constants.F/2))
   pygame.draw.rect(pygame.display.get_surface(), (247, 58, 58), (x+10*constants.F, y, obj.life * (100 / obj.MAX_HP)*constants.F, 13*constants.F/2))
   pygame.draw.rect(pygame.display.get_surface(), (255, 255, 255), (x+10*constants.F, y, obj.life * (100 / obj.MAX_HP)*constants.F, 6*constants.F/2))
