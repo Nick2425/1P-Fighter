@@ -8,7 +8,7 @@ def loadBG():
   pygame.transform.scale(manager.win, (480*constants.F, 270*constants.F))
   pass
 
-def horizontal():
+def horizontal(): #Explained in documentation.
   keys = pygame.key.get_pressed()
   if keys[pygame.K_a] or keys[pygame.K_LEFT]:
     return -1
@@ -17,7 +17,7 @@ def horizontal():
   else:
     return 0
 
-def vertical():
+def vertical(): # Explained in documentation.
   keys = pygame.key.get_pressed()
   if keys[pygame.K_w] or keys[pygame.K_UP]:
     return -1
@@ -36,6 +36,7 @@ def updateUI(obj):
         loadBar(x, x.x, x.y)
   loadBarP(obj[0], 60, 40)
 
+# Loads four rectangles displaying health information.
 def loadBar(obj, x, y):
   pygame.draw.rect(pygame.display.get_surface(), (85, 27, 27), (x-10*constants.F, y-5*constants.F, obj.health * (50 / obj.max_health)*constants.F, 10*constants.F/2))
   pygame.draw.rect(pygame.display.get_surface(), (247, 58, 58), (x-10*constants.F, y-5*constants.F, obj.health * (50 / obj.max_health)*constants.F, 6.5*constants.F/2))
@@ -43,11 +44,8 @@ def loadBar(obj, x, y):
   pygame.draw.rect(pygame.display.get_surface(), (0, 0, 0, 0), (x-10*constants.F, y-5*constants.F, 50*constants.F, 10*constants.F/2), 3)
 
 def loadBarP(obj, x, y):
-  #pygame.draw.circle(pygame.display.get_surface(), (247, 58, 58), (x-30, y+5*constants.F), 10*constants.F)
-  #pygame.draw.circle(pygame.display.get_surface(), (0, 0, 0), (x-30, y+5*constants.F), 10*constants.F, 5)
-  #txt = fnt.render(str(obj.lives), False, (255, 255, 255))
-  #pygame.display.get_surface().blit(txt, (x-25-5*constants.F, y-5*constants.F))
 
+  # Creates a rendered font and prints it.
   txt = fnt.render("Score:" + str(manager.score), False, (255, 255, 255))
   pygame.display.get_surface().blit(txt, (x-25-5*constants.F, y+10*constants.F))
 
@@ -90,16 +88,17 @@ def sortObjects(list):
   for x in alt:
     x.move()
     
+# adds velocity to objects.
 def push(obj, obj2, v):
-  
   delta_X = obj.x - obj2.x
   if delta_X < 0:
     obj.x -= v
   else:
     obj.x += v
+# Displays text.
 def text(string):
   txt = fnt.render(string, False, (255, 255, 255))
-  pygame.display.get_surface().blit(txt, (constants.SIZE.x*0.5, constants.SIZE.y))
+  pygame.display.get_surface().blit(txt, (constants.SIZE.x*0.25, constants.SIZE.y))
 
 def exit():
   manager.run = False
