@@ -89,6 +89,7 @@ class Player():
             if obj.health <= 0: # Check if it is less than zero health.
               if obj.bullet != True:
                 manager.score += 1 # Add 1 to score if not a bullet.
+                self.life += 2
               delBullet(obj) # Delete the enemy from bullet list just in case.
 
     except:
