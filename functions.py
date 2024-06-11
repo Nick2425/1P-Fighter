@@ -122,7 +122,8 @@ def text(string, x, y, fontsize):
   pygame.display.get_surface().blit(txt_bg, (x, y))
 
   txt = f0nt.render(string, False, (255, 255, 255))
-  pygame.display.get_surface().blit(txt, (x+200*float(size[0])/800, y+600*float(size[1])/400))
+  pygame.display.get_surface().blit(txt, (x+29.14*constants.F, y+26.25*constants.F))
+  print(x+200*float(size[0])/800, y+600*float(size[1])/400)
   print(constants.SIZE)
 def exit():
   manager.run = False
