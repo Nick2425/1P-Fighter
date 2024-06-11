@@ -11,6 +11,7 @@ player = classes.Player(50, 50) # Player Object.
 #20 Ticks/Second
 while manager.run:
     #Timer
+    functions.text(functions.getHS(manager.score), 0.25*constants.SIZE[0], 0.5 * constants.SIZE[1], 50)
     pygame.time.delay(50)
     manager.clock.tick()
 
@@ -61,9 +62,7 @@ while manager.run:
     functions.sortObjects(manager.gameObjects)
     
 # End Game information, displays score and such, then quits.
-fnt = pygame.font.SysFont("comicsans", 100)
-txt = fnt.render(functions.getHS(manager.score), False, (0, 0, 0))
-manager.win.blit(txt, (constants.SIZE[0]*0.15, constants.SIZE[1]*0.5))
+functions.text(functions.getHS(manager.score), 0.25*constants.SIZE[0], 0.5 * constants.SIZE[1], 50)
 pygame.display.update()
 
 pygame.time.delay(3000)

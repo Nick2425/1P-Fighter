@@ -113,10 +113,17 @@ def push(obj, obj2, v):
   else:
     obj.x += v
 # Displays text.
-def text(string):
-  txt = fnt.render(string, False, (255, 255, 255))
-  pygame.display.get_surface().blit(txt, (constants.SIZE.x*0.25, constants.SIZE.y))
+def text(string, x, y, fontsize):
 
+  f0nt = pygame.font.SysFont('Calibri', fontsize, True, True)
+  size = pygame.font.Font.size(fnt, string)
+
+  txt_bg = pygame.transform.scale_by(pygame.image.load(os.path.join('graphics', 'background-text.png')), float(size[0])/500)
+  pygame.display.get_surface().blit(txt_bg, (x, y))
+
+  txt = f0nt.render(string, False, (255, 255, 255))
+  pygame.display.get_surface().blit(txt, (x+200*float(size[0])/800, y+600*float(size[1])/400))
+  print(constants.SIZE)
 def exit():
   manager.run = False
 
