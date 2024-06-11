@@ -115,7 +115,7 @@ def push(obj, obj2, v):
 # Displays text.
 def text(string, x, y, fontsize):
 
-  f0nt = pygame.font.SysFont('Calibri', fontsize/3.2*constants.F, True, True)
+  f0nt = pygame.font.SysFont('Calibri', int(fontsize/3.2*constants.F), True, True)
   size = pygame.font.Font.size(fnt, string)
 
   txt_bg = pygame.transform.scale_by(pygame.image.load(os.path.join('graphics', 'background-text.png')), float(size[0])/500)
