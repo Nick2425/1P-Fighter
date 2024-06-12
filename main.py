@@ -2,10 +2,30 @@
 #Date: Monday, June 10, 2024
 #Purpose: Create an interactive GUI, or game.
 
-import pygame, sys, functions, classes, constants, manager, random
+import pygame, sys, functions, classes, constants, manager, random, os
 from pygame.locals import QUIT
 
 pygame.init()
+
+b1 = pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/controls', 'ctrlm0.png')), constants.F)
+b2 = pygame.transform.scale_by(pygame.image.load(os.path.join('graphics/controls', 'ctrlm1.png')), constants.F)
+
+ctrl = True
+accumulator = 0
+# Control Menu
+while ctrl == True:
+    accumulator += 1
+    pygame.time.delay(750)
+
+    if accumulator % 2 == 0:
+        manager.win.blit(b1, (0,0))
+    elif accumulator % 2 == 1:
+        manager.win.blit(b2, (0,0))
+    for e in pygame.event.get():
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_RETURN]:
+            ctrl = False
+    pygame.display.update()
 player = classes.Player(50, 50) # Player Object.
 
 #20 Ticks/Second
